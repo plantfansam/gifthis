@@ -14,7 +14,7 @@ hideButton = function(uniq_id) {
 getButtonHash = function(jelem) {
   return jelem.attr("src").hashCode()
 }
-
+var x = {}
 //ripped from http://stackoverflow.com/a/7616484/945795
 String.prototype.hashCode = function() {
   var hash = 0, i, chr, len;
@@ -39,15 +39,16 @@ $(document).ready(function() {
     setTimeout(function(x){hideButton(getButtonHash(x))}, 2000, $(this));
   })
   $("._gifthis_button").on("click", function() {
-    $(this).addClass("_gifthis_loader");
-    $(this).html('');
-    $.ajax({
-      url: "test.html",
-    }).done(function(e) {
-      $(this).removeClass( "_gifthis_loader" );
-    });
+    button = $(this);
+    button.addClass("_gifthis_loader");
+    button.html('');
     image = $(this).prev('img');
     image.css({"height": image.height(), "width":image.width() });
-    image.attr("src", "");
+    $.getJSON("http://api.giphy.com/v1/gifs/search?q=pizza&api_key=dc6zaTOxFJmzC&limit=1")
+      .done(function(response) {
+        gif_url = response.data[0].images.original.url
+        button.hide();
+        image.attr("src", gif_url);
+      });
   })
 });
