@@ -1,0 +1,25 @@
+._gifthis_button {
+  width: 100px;
+  height: 30px;
+  background: black;
+  color: white;
+  font-size: 14px;
+  font-weight: bold;
+  letter-spacing: 4px;
+  line-height: 30px;
+  text-align: center;
+  font-family: helvetica, sans-serif;
+  margin-left: 1px;
+  position: absolute;
+  display: none;
+}
+
+._gifthis_button:hover {
+  cursor: pointer;
+}
+
+._gifthis_loader {
+  background-image: url('ajax-loader.gif');
+  background-position: center;
+  background-repeat: no-repeat;
+}
