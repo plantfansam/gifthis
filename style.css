@@ -8,10 +8,17 @@
   letter-spacing: 4px;
   line-height: 30px;
   text-align: center;
-  font-family: helvetica, sans-serif;
+  font-family: courier, serif;
   margin-left: 1px;
   position: absolute;
   z-index: 1000;
+  padding-left: 2px;
+}
+
+._gifthis_button p {
+  background: black;
+  padding: 0px;
+  margin: 0px;
 }
 
 ._gifthis_minimize {
