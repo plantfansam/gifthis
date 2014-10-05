@@ -13,7 +13,7 @@
     "default_popup": "popup.html"
   },
   "content_scripts": [{
-      "js": ["jquery-1.11.1.min.js", "alert.js"],
+      "js": ["jquery-1.11.1.min.js", "gifthis.js"],
       "css": ["style.css"],
       "matches": [ "http://*/*", "https://*/*"]
     }]

@@ -1,14 +1,11 @@
 createButton = function(parentjelem) {
-  uniq_id = "gifthis" + getButtonHash(parentjelem)
+  uniq_id = "_gifthis" + getButtonHash(parentjelem)
   offset = parentjelem.offset();
+  parentjelem.addClass(uniq_id);
   dialog = $("<div id='" + uniq_id + "' class='_gifthis_button' style='z-index:1000;'>\
-  gifthis</div>");
-  $(parentjelem).after(dialog); 
-  return uniq_id;
-}
-
-hideButton = function(uniq_id) {
-  $("#gifthis" + uniq_id).hide();
+  gifthis<span class='_gifthis_minimize'>x</span></div>");
+  $("body").after(dialog); 
+  return dialog;
 }
 
 getButtonHash = function(jelem) {
@@ -28,27 +25,37 @@ String.prototype.hashCode = function() {
 };
 
 $(document).ready(function() {
-  $("img").each(function() {
-    createButton($(this));
-  })
-  $("img").hover(function() {
-    button = $("#gifthis" + getButtonHash($(this)));
-    button.css("top", $(this).offset()["top"], "left", $(this).offset()["left"]);
-    button.show()
+  $("img").hover(function(e) {
+    if ($(this).hasClass("_gifthis_pop_disabled")) {
+      return false
+    } else if ($(this).width() < 100) {
+      return false
+    } else {
+      $(this).addClass("_gifthis_pop_disabled")
+      button = createButton($(this))
+      button.css({"top" : $(this).offset()["top"] + "px", "left" : $(this).offset()["left"] + "px"});
+    }
   }, function() {
-    setTimeout(function(x){hideButton(getButtonHash(x))}, 2000, $(this));
+    //setTimeout(function(x){hideButton(getButtonHash(x))}, 2000, $(this));
   })
-  $("._gifthis_button").on("click", function() {
+  $(document).on("click", "._gifthis_button", function() {
     button = $(this);
     button.addClass("_gifthis_loader");
     button.html('');
-    image = $(this).prev('img');
+    image = $("." + button.attr("id"));
     image.css({"height": image.height(), "width":image.width() });
     $.getJSON("http://api.giphy.com/v1/gifs/search?q=pizza&api_key=dc6zaTOxFJmzC&limit=1")
       .done(function(response) {
         gif_url = response.data[0].images.original.url
-        button.hide();
+        button.remove();
+        image.addClass("_gifthis_pop_disabled");
         image.attr("src", gif_url);
       });
+  })
+  $(document).on("click", "._gifthis_minimize", function(e) {
+    image = $("." + $(this).parent("div").attr("id"));
+    image.addClass("_gifthis_pop_disabled");
+    $(this).parent("div").remove();
+    return false
   })
 });
