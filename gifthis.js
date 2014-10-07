@@ -31,8 +31,6 @@ getQueryTerm = function(jelem) {
     words = words.map(function(v){return v.split("(")[0]})
   };
 
-  console.log(words);
-  console.log(typeof(words));
   if (words.length > 0) {
     good_words = [];
     for (i = 0; i < words.length; i++) { 
@@ -45,6 +43,40 @@ getQueryTerm = function(jelem) {
   }
   good_words = good_words.filter(function(v){return v!==''}).filter(function(v){return v.trim()});
   return good_words[Math.floor(Math.random() * good_words.length)]
+}
+
+getGIF = function(query_term, buttonid) {
+  if (query_term === "random") {
+    query_url = "http://api.giphy.com/v1/gifs/trending?api_key=dc6zaTOxFJmzC&limit=5"
+  } else {
+    query_url = "http://api.giphy.com/v1/gifs/search?q=" + query_term + "&api_key=dc6zaTOxFJmzC&limit=5"
+  }
+  $.getJSON(query_url)
+    .done(function(response) {
+      button = $("#" + buttonid);
+      button.width(image.width());
+      button.css({
+        "letter-spacing": "1px",
+        "font-size": "10px",
+        "line-height": "14px",
+        "font-weight": "normal",
+        "height": "auto"
+      });
+      button.removeClass("_gifthis_loader");
+      if (response.data.length > 0) {
+        image = $("." + buttonid);
+        gif_url = response.data[Math.floor(Math.random() * response.data.length)].images.original.url
+        if (query_term !== "random") {
+          button.html("matched search \"" + query_term + "\"");
+        }
+        image.addClass("_gifthis_pop_disabled");
+        image.attr("src", gif_url);
+        image.attr("srcset", gif_url);
+      } else {
+        button.html("no matches...here's a gif though...");
+        setTimeout(function(){getGIF("random", buttonid), 1000}); 
+      }
+    });
 }
 
 //ripped from http://stackoverflow.com/a/7616484/945795
@@ -75,32 +107,13 @@ $(document).ready(function() {
   })
   $(document).on("click", "._gifthis_button", function() {
     button = $(this);
+    buttonid = button.attr("id");
     button.addClass("_gifthis_loader");
     button.html('');
-    image = $("." + button.attr("id"));
+    image = $("." + buttonid);
     image.css({"height": image.height(), "width":image.width() });
     query_term = getQueryTerm(image);
-    $.getJSON("http://api.giphy.com/v1/gifs/search?q=" + query_term + "&api_key=dc6zaTOxFJmzC&limit=5")
-      .done(function(response) {
-        button.width(image.width());
-        button.css({
-          "letter-spacing": "1px",
-          "font-size": "10px",
-          "line-height": "14px",
-          "font-weight": "normal",
-          "height": "auto"
-        });
-        button.removeClass("_gifthis_loader");
-        if (response.data.length > 0) {
-          gif_url = response.data[Math.floor(Math.random() * response.data.length)].images.original.url
-          button.html("matched search \"" + query_term + "\"");
-          image.addClass("_gifthis_pop_disabled");
-          image.attr("src", gif_url);
-          image.attr("srcset", gif_url);
-        } else {
-          button.html("no matches for " + query_term + "...");  
-        }
-      });
+    getGIF(query_term, buttonid);
   })
   $(document).on("click", "._gifthis_minimize", function(e) {
     image = $("." + $(this).parent("div").attr("id"));
